@@ -1,7 +1,9 @@
+import FlowContainer from "@/components/home/FlowContainer";
+
 const Page = () => {
   return (
-    <div>
-      <h1>Home</h1>
+    <div className="h-screen w-full">
+      <FlowContainer />
     </div>
   );
 };
