@@ -1,10 +1,12 @@
 "use client";
+import { Node, useReactFlow } from "@xyflow/react";
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, Clock, Plus } from "lucide-react";
 import { useState } from "react";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { addNodes } = useReactFlow();
 
   const historyItems = [
     "Design v1",
@@ -13,6 +15,18 @@ const Sidebar = () => {
     "Mobile Layout",
     "Final Concept",
   ];
+
+  function handleInitWorkspace() {
+    const initialNewNodes: Node[] = [
+      {
+        id: "start-1",
+        type: "start",
+        data: {},
+        position: { x: 480, y: 0 },
+      },
+    ];
+    addNodes(initialNewNodes);
+  }
 
   return (
     <aside
@@ -41,12 +55,13 @@ const Sidebar = () => {
         <>
           <div className="px-3">
             <button
+              onClick={handleInitWorkspace}
               className="flex w-full items-center gap-2 rounded-xl
           border border-gray-200 px-3 py-2.5 text-sm font-medium
           hover:bg-gray-50"
             >
               <Plus size={16} />
-              <span>New design</span>
+              <span>New Workspace</span>
             </button>
           </div>
 
