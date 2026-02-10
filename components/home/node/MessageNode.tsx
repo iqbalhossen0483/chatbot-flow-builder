@@ -2,8 +2,6 @@ import ToggleButton from "@/components/libs/ToggleButton";
 import { useReactFlow } from "@xyflow/react";
 import {
   BookType,
-  ChevronDown,
-  ChevronUp,
   Image as ImageIcon,
   Link,
   LucideProps,
@@ -55,13 +53,6 @@ const MESSAGE_TYPE_META: Record<MessageType, MessageTypeMeta> = {
 };
 
 const ALL_TYPES: MessageType[] = ["text", "rich_text", "image", "link"];
-
-// ─── Shared input styles ──────────────────────────────────────────────────────
-
-const inputCls =
-  "w-full rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs text-gray-800 placeholder-gray-300 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all";
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function MessageNode({ id, data, selected }: MessageNodeProps) {
   const { updateNodeData } = useReactFlow();
@@ -119,7 +110,6 @@ export default function MessageNode({ id, data, selected }: MessageNodeProps) {
           value={data.label}
           onChange={(e) => update({ label: e.target.value })}
           placeholder="Node label…"
-          className={inputCls}
         />
       </div>
 
@@ -167,7 +157,6 @@ export default function MessageNode({ id, data, selected }: MessageNodeProps) {
                 : "Enter your message…"
             }
             rows={3}
-            className={`${inputCls} resize-none`}
           />
         </div>
       )}
@@ -183,7 +172,7 @@ export default function MessageNode({ id, data, selected }: MessageNodeProps) {
             value={data.imageUrl ?? ""}
             onChange={(e) => update({ imageUrl: e.target.value })}
             placeholder="https://example.com/image.png"
-            className={`${inputCls} font-mono`}
+            className="font-mono"
           />
           {data.imageUrl && (
             <div className="mt-2 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 h-20 flex items-center justify-center">
@@ -214,7 +203,6 @@ export default function MessageNode({ id, data, selected }: MessageNodeProps) {
               value={data.linkText ?? ""}
               onChange={(e) => update({ linkText: e.target.value })}
               placeholder="Click here"
-              className={inputCls}
             />
           </div>
           <div>
@@ -226,7 +214,7 @@ export default function MessageNode({ id, data, selected }: MessageNodeProps) {
               value={data.linkUrl ?? ""}
               onChange={(e) => update({ linkUrl: e.target.value })}
               placeholder="https://example.com"
-              className={`${inputCls} font-mono`}
+              className="font-mono"
             />
           </div>
         </div>
