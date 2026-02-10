@@ -136,18 +136,9 @@ export const nodeTypes: NodeTypes = {
   jump: JumpNode,
 };
 
-export const initialNodes: Node[] = [
-  {
-    id: "start-1",
-    type: "start",
-    data: {},
-    position: { x: 480, y: 0 },
-  },
-];
+export const initialNodes: Node[] = [];
 
-export const initialEdges: Edge[] = [
-  { id: "e01", source: "start-1", target: "msg-welcome" },
-];
+export const initialEdges: Edge[] = [];
 
 // ─── ReactFlow options ────────────────────────────────────────────────────────
 export const fitViewOptions: FitViewOptions = {
