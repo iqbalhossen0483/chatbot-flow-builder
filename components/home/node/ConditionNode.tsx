@@ -1,19 +1,17 @@
 import ToggleButton from "@/components/libs/ToggleButton";
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { AirVent, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { BaseNode } from "./BaseNode";
 
 type ConditionBranch = {
   id: string;
   label: string;
-  expression?: string;
+  condition: string;
 };
 
 type ConditionNodeData = {
   label: string;
-  mode?: "if_else" | "switch";
-  variable?: string;
   branches?: ConditionBranch[];
 };
 
@@ -23,9 +21,9 @@ type ConditionNodeProps = {
   selected?: boolean;
 };
 
-const DEFAULT_IF_ELSE_BRANCHES: ConditionBranch[] = [
-  { id: "true", label: "True", expression: "" },
-  { id: "false", label: "False", expression: "" },
+const DEFAULT_BRANCHES: ConditionBranch[] = [
+  { id: "if", label: "If", condition: "" },
+  { id: "else", label: "Else", condition: "" },
 ];
 
 export default function ConditionNode({
@@ -36,8 +34,7 @@ export default function ConditionNode({
   const { updateNodeData } = useReactFlow();
   const [editing, setEditing] = useState(false);
 
-  const mode = data.mode ?? "if_else";
-  const branches = data.branches ?? DEFAULT_IF_ELSE_BRANCHES;
+  const branches = data.branches ?? DEFAULT_BRANCHES;
 
   const update = useCallback(
     (patch: Partial<ConditionNodeData>) => updateNodeData(id, patch),
@@ -51,18 +48,24 @@ export default function ConditionNode({
   });
 
   // Branch management functions
-  const addBranch = useCallback(() => {
+  const addElseIf = useCallback(() => {
+    // Insert before the last branch (which should be "else")
     const newBranch: ConditionBranch = {
-      id: `branch_${Date.now()}`,
-      label: `Branch ${branches.length + 1}`,
-      expression: "",
+      id: `elseif_${Date.now()}`,
+      label: "Else If",
+      condition: "",
     };
-    update({ branches: [...branches, newBranch] });
+    const newBranches = [...branches];
+    newBranches.splice(branches.length - 1, 0, newBranch);
+    update({ branches: newBranches });
   }, [branches, update]);
 
   const removeBranch = useCallback(
     (branchId: string) => {
-      if (branches.length <= 2) return; // Keep at least 2 branches
+      // Don't allow removing if only 2 branches left (if + else)
+      if (branches.length <= 2) return;
+      // Don't allow removing the last branch (else)
+      if (branches[branches.length - 1].id === branchId) return;
       update({ branches: branches.filter((b) => b.id !== branchId) });
     },
     [branches, update],
@@ -79,41 +82,51 @@ export default function ConditionNode({
     [branches, update],
   );
 
-  // ── Collapsed preview
+  const getBranchColor = (branch: ConditionBranch, index: number) => {
+    const isLast = index === branches.length - 1;
+    const isFirst = index === 0;
+
+    if (isFirst) {
+      return "bg-green-50 text-green-600 border-green-100";
+    } else if (isLast) {
+      return "bg-red-50 text-red-500 border-red-100";
+    } else {
+      return "bg-blue-50 text-blue-600 border-blue-100";
+    }
+  };
+
+  // ── Collapsed preview ────────────────────────────────────────────────────
   const preview = (
     <div className="space-y-1.5">
       <div className="text-sm text-gray-800 font-medium truncate max-w-50">
         {data.label || "Untitled condition"}
       </div>
 
-      {data.variable && (
-        <div className="text-xs text-gray-400 font-mono bg-gray-50 rounded px-1.5 py-0.5 truncate max-w-50">
-          eval: {data.variable}
-        </div>
-      )}
-
       {/* Branch list */}
       <div className="flex flex-wrap gap-1 pt-1">
-        {branches.map((branch) => (
+        {branches.map((branch, index) => (
           <span
             key={branch.id}
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border ${
-              branch.id === "true" || branch.label.toLowerCase() === "true"
-                ? "bg-green-50 text-green-600 border-green-100"
-                : branch.id === "false" ||
-                    branch.label.toLowerCase() === "false"
-                  ? "bg-red-50 text-red-500 border-red-100"
-                  : "bg-gray-50 text-gray-600 border-gray-200"
-            }`}
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border ${getBranchColor(branch, index)}`}
           >
             {branch.label}
           </span>
         ))}
       </div>
+
+      {/* Show conditions preview */}
+      {branches.some((b) => b.condition) && (
+        <div className="text-xs text-gray-400 bg-gray-50 rounded px-1.5 py-0.5 truncate max-w-50">
+          {branches
+            .filter((b) => b.condition)
+            .map((b) => b.condition)
+            .join(" | ")}
+        </div>
+      )}
     </div>
   );
 
-  // ── Edit panel
+  // ── Edit panel ────────────────────────────────────────────────────────────
   const editPanel = (
     <div className="mt-3 space-y-3 nodrag nopan nowheel">
       {/* Label */}
@@ -129,43 +142,6 @@ export default function ConditionNode({
         />
       </div>
 
-      {/* Mode selector */}
-      <div>
-        <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
-          Mode
-        </label>
-        <div className="grid grid-cols-2 gap-1 bg-gray-100 rounded-lg p-0.5">
-          {(["if_else", "switch"] as const).map((m) => (
-            <button
-              key={m}
-              onClick={() => update({ mode: m })}
-              className={[
-                "rounded-md py-1.5 px-2 text-[10px] font-semibold transition-all duration-150",
-                mode === m
-                  ? "bg-white text-amber-600 shadow-sm"
-                  : "text-gray-400 hover:text-gray-600",
-              ].join(" ")}
-            >
-              {m === "if_else" ? "IF / ELSE" : "SWITCH"}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Variable */}
-      <div>
-        <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
-          Variable to Evaluate
-        </label>
-        <input
-          type="text"
-          value={data.variable ?? ""}
-          onChange={(e) => update({ variable: e.target.value })}
-          placeholder="e.g., user_response"
-          className="font-mono"
-        />
-      </div>
-
       {/* Branches */}
       <div>
         <div className="flex items-center justify-between mb-1">
@@ -173,56 +149,73 @@ export default function ConditionNode({
             Branches
           </label>
           <button
-            onClick={addBranch}
+            onClick={addElseIf}
             className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 hover:text-amber-700 transition-colors"
-            title="Add branch"
+            title="Add Else If"
           >
             <Plus size={12} />
-            Add
+            Else If
           </button>
         </div>
 
         <div className="space-y-2">
-          {branches.map((branch, index) => (
-            <div
-              key={branch.id}
-              className="bg-gray-50 rounded-lg p-2 space-y-1.5"
-            >
-              <div className="flex items-center gap-1.5">
-                <input
-                  type="text"
-                  value={branch.label}
-                  onChange={(e) =>
-                    updateBranch(branch.id, { label: e.target.value })
-                  }
-                  placeholder="Branch label"
-                  className="flex-1 rounded border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 placeholder-gray-300 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-100"
-                />
-                {branches.length > 2 && (
-                  <button
-                    onClick={() => removeBranch(branch.id)}
-                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                    title="Remove branch"
-                  >
-                    <X size={14} />
-                  </button>
+          {branches.map((branch, index) => {
+            const isLast = index === branches.length - 1;
+            const isFirst = index === 0;
+
+            return (
+              <div
+                key={branch.id}
+                className={`rounded-lg p-2 space-y-1.5 ${
+                  isFirst
+                    ? "bg-green-50 border border-green-100"
+                    : isLast
+                      ? "bg-red-50 border border-red-100"
+                      : "bg-blue-50 border border-blue-100"
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={branch.label}
+                    onChange={(e) =>
+                      updateBranch(branch.id, { label: e.target.value })
+                    }
+                    placeholder={isFirst ? "If" : isLast ? "Else" : "Else If"}
+                    className="flex-1 rounded border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 placeholder-gray-300 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-100"
+                  />
+                  {!isFirst && !isLast && (
+                    <button
+                      onClick={() => removeBranch(branch.id)}
+                      className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                      title="Remove Else If"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Condition input (not for the final "else" branch) */}
+                {!isLast && (
+                  <input
+                    type="text"
+                    value={branch.condition ?? ""}
+                    onChange={(e) =>
+                      updateBranch(branch.id, { condition: e.target.value })
+                    }
+                    placeholder="e.g., age >= 18, status == 'active'"
+                    className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 placeholder-gray-300 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-100 font-mono"
+                  />
                 )}
               </div>
-
-              {mode === "switch" && (
-                <input
-                  type="text"
-                  value={branch.expression ?? ""}
-                  onChange={(e) =>
-                    updateBranch(branch.id, { expression: e.target.value })
-                  }
-                  placeholder="Match value (e.g., 'yes', '> 100')"
-                  className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 placeholder-gray-300 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-100 font-mono"
-                />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
+
+        <p className="text-[10px] text-gray-400 mt-2">
+          Branches are evaluated in order. The &quot;Else&quot; branch catches
+          all other cases.
+        </p>
       </div>
     </div>
   );
@@ -232,13 +225,20 @@ export default function ConditionNode({
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-6 h-6 rounded-md bg-amber-50 flex items-center justify-center shrink-0">
-          <AirVent size={16} className="text-amber-500" />
+          <svg
+            className="w-3.5 h-3.5 text-amber-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M22 12H2" />
+            <path d="M12 2v10" />
+            <path d="m6 16 6 6 6-6" />
+          </svg>
         </div>
         <span className="text-xs font-semibold text-gray-700 tracking-wide uppercase">
           Condition
-        </span>
-        <span className="ml-auto inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-600 border border-amber-100">
-          {mode === "if_else" ? "IF / ELSE" : "SWITCH"}
         </span>
         <ToggleButton editing={editing} setEditing={setEditing} />
       </div>
