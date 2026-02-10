@@ -17,7 +17,7 @@ const ToggleButton = ({ editing, setEditing }: Props) => {
       <ChevronUp
         size={12}
         className={clsx("transition-all duration-300", {
-          "rotate-180": editing,
+          "rotate-180": !editing,
         })}
       />
     </button>
