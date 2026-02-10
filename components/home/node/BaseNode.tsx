@@ -1,4 +1,5 @@
-import { Handle, Position, useNodeId } from "@xyflow/react";
+import DeleteButton from "@/components/libs/DeleteButton";
+import { Handle, Position, useNodeId, useReactFlow } from "@xyflow/react";
 import clsx from "clsx";
 import { useState } from "react";
 import NodeAdder from "../NodeAdder";
@@ -17,7 +18,14 @@ export function BaseNode({
   className = "",
 }: BaseNodeProps) {
   const [open, setOpen] = useState<boolean>(false);
+  const { deleteElements } = useReactFlow();
   const nodeId = useNodeId();
+
+  function handleDelete() {
+    if (!nodeId) return;
+    deleteElements({ nodes: [{ id: nodeId }] });
+  }
+
   return (
     <>
       <div
@@ -46,6 +54,9 @@ export function BaseNode({
         )}
 
         {children}
+        <div className="absolute top-0 right-0">
+          <DeleteButton onDelete={handleDelete} />
+        </div>
       </div>
       {selected && (
         <NodeAdder selectedNodeId={nodeId} open={open} setOpen={setOpen} />

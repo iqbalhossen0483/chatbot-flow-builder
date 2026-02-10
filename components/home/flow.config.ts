@@ -21,7 +21,6 @@ import {
   Square,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { chatbotUIEdge01, chatbotUINode01 } from "./examples/chatbot-ui-01";
 import ApiNode from "./node/ApiNode";
 import ConditionNode from "./node/ConditionNode";
 import DelayNode from "./node/DelayNode";
@@ -159,12 +158,4 @@ export const fitViewOptions: FitViewOptions = {
 export const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: false,
   style: { strokeWidth: 1.5, stroke: "#d1d5db" },
-};
-
-// ─── Legacy NodeProps type (kept for compat) ───────────────────────────────────
-export type NodeProps = {
-  id: string;
-  data: {
-    label: string;
-  };
 };
