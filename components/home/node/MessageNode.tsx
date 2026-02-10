@@ -1,3 +1,11 @@
+import {
+  BookType,
+  Image,
+  Link,
+  LucideProps,
+  MessageSquareText,
+} from "lucide-react";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { BaseNode } from "./BaseNode";
 
 type MessageType = "text" | "rich_text" | "image" | "link";
@@ -17,14 +25,34 @@ type MessageNodeProps = {
   selected?: boolean;
 };
 
-const MESSAGE_TYPE_META: Record<
-  MessageType,
-  { icon: string; color: string; label: string }
-> = {
-  text: { icon: "💬", color: "text-indigo-500", label: "Text" },
-  rich_text: { icon: "📝", color: "text-indigo-500", label: "Rich Text" },
-  image: { icon: "🖼️", color: "text-indigo-500", label: "Image" },
-  link: { icon: "🔗", color: "text-indigo-500", label: "Link" },
+type MessageData = {
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
+  color: string;
+  label: string;
+};
+type MessageTypeMeta = {
+  text: MessageData;
+  rich_text: MessageData;
+  image: MessageData;
+  link: MessageData;
+};
+
+const MESSAGE_TYPE_META: MessageTypeMeta = {
+  text: {
+    icon: MessageSquareText,
+    color: "text-indigo-500",
+    label: "Text",
+  },
+  rich_text: {
+    icon: BookType,
+    color: "text-indigo-500",
+    label: "Rich Text",
+  },
+
+  image: { icon: Image, color: "text-indigo-500", label: "Image" },
+  link: { icon: Link, color: "text-indigo-500", label: "Link" },
 };
 
 export default function MessageNode({ data, selected }: MessageNodeProps) {
@@ -36,7 +64,7 @@ export default function MessageNode({ data, selected }: MessageNodeProps) {
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-6 h-6 rounded-md bg-indigo-50 flex items-center justify-center shrink-0 text-sm">
-          {meta.icon}
+          <meta.icon className={meta.color} size={16} />
         </div>
         <span className="text-xs font-semibold text-gray-700 tracking-wide uppercase">
           Message
