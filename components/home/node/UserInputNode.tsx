@@ -1,7 +1,7 @@
 import Switch from "@/components/libs/Switch";
 import ToggleButton from "@/components/libs/ToggleButton";
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { FilePenLine } from "lucide-react";
+import { FilePenLine, PencilLine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { BaseNode } from "./BaseNode";
 
@@ -173,7 +173,7 @@ export default function UserInputNode({
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-6 h-6 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-          <FilePenLine size={16} className="text-blue-500" />
+          <PencilLine size={16} className="text-blue-500" />
         </div>
         <span className="text-xs font-semibold text-gray-700 tracking-wide uppercase">
           User Input

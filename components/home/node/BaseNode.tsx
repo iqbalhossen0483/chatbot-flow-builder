@@ -54,9 +54,11 @@ export function BaseNode({
         )}
 
         {children}
-        <div className="absolute top-0 right-0">
-          <DeleteButton onDelete={handleDelete} />
-        </div>
+        {selected && (
+          <div className="absolute top-0 right-0">
+            <DeleteButton onDelete={handleDelete} />
+          </div>
+        )}
       </div>
       {selected && (
         <NodeAdder selectedNodeId={nodeId} open={open} setOpen={setOpen} />
