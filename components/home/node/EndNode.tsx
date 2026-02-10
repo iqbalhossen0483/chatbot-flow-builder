@@ -24,11 +24,6 @@ export default function EndNode({ selected }: EndNodeProps) {
         position={Position.Top}
         className="w-3! h-3! bg-white! border-2! border-red-400!"
       />
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="w-3! h-3! bg-white! border-2! border-red-400!"
-      />
     </div>
   );
 }

@@ -7,6 +7,20 @@ import {
 } from "@xyflow/react";
 
 // Node components
+import {
+  AirVent,
+  ArrowBigUp,
+  ArrowRightLeft,
+  ArrowRightLeftIcon,
+  Clock9,
+  Columns3Cog,
+  LucideProps,
+  MessageSquareText,
+  PencilLine,
+  Play,
+  Square,
+} from "lucide-react";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { chatbotUIEdge01, chatbotUINode01 } from "./examples/chatbot-ui-01";
 import ApiNode from "./node/ApiNode";
 import ConditionNode from "./node/ConditionNode";
@@ -37,7 +51,9 @@ export type NodeType = (typeof NODE_TYPES)[keyof typeof NODE_TYPES];
 export type NodePaletteMeta = {
   type: NodeType;
   label: string;
-  icon: string;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
   description: string;
   color: string; // Tailwind bg class for the dot/icon bg
 };
@@ -46,63 +62,63 @@ export const NODE_PALETTE: NodePaletteMeta[] = [
   {
     type: "start",
     label: "Start",
-    icon: "▶",
+    icon: Play,
     description: "Entry point of the flow",
     color: "bg-green-100 text-green-600",
   },
   {
     type: "end",
     label: "End",
-    icon: "■",
+    icon: Square,
     description: "Terminates the flow",
     color: "bg-red-100 text-red-500",
   },
   {
     type: "message",
     label: "Message",
-    icon: "💬",
+    icon: MessageSquareText,
     description: "Send text, image, or link",
     color: "bg-indigo-100 text-indigo-500",
   },
   {
     type: "userInput",
     label: "User Input",
-    icon: "✏️",
+    icon: PencilLine,
     description: "Collect input from user",
     color: "bg-blue-100 text-blue-500",
   },
   {
     type: "condition",
     label: "Condition",
-    icon: "⑂",
+    icon: AirVent,
     description: "Branch with if/else",
     color: "bg-amber-100 text-amber-600",
   },
   {
     type: "switch",
     label: "Switch",
-    icon: "≡",
+    icon: Columns3Cog,
     description: "Multi-case branching",
     color: "bg-purple-100 text-purple-500",
   },
   {
     type: "api",
     label: "API Call",
-    icon: "⬆",
+    icon: ArrowBigUp,
     description: "HTTP request or webhook",
     color: "bg-violet-100 text-violet-500",
   },
   {
     type: "delay",
     label: "Delay / Wait",
-    icon: "⏱",
+    icon: Clock9,
     description: "Pause flow execution",
     color: "bg-cyan-100 text-cyan-500",
   },
   {
     type: "jump",
     label: "Jump",
-    icon: "↪",
+    icon: ArrowRightLeftIcon,
     description: "Redirect to another node",
     color: "bg-pink-100 text-pink-500",
   },
@@ -121,9 +137,18 @@ export const nodeTypes: NodeTypes = {
   jump: JumpNode,
 };
 
-export const initialNodes: Node[] = chatbotUINode01;
+export const initialNodes: Node[] = [
+  {
+    id: "start-1",
+    type: "start",
+    data: {},
+    position: { x: 480, y: 0 },
+  },
+];
 
-export const initialEdges: Edge[] = chatbotUIEdge01;
+export const initialEdges: Edge[] = [
+  { id: "e01", source: "start-1", target: "msg-welcome" },
+];
 
 // ─── ReactFlow options ────────────────────────────────────────────────────────
 export const fitViewOptions: FitViewOptions = {

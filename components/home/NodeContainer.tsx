@@ -1,47 +1,59 @@
-import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { ChangeEvent } from "react";
+"use client";
 
-type CustomNodeProps = {
-  id: string;
-  data: {
-    label: string;
-  };
-};
+import {
+  Background,
+  ReactFlow,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  type Edge,
+  type Node,
+  type OnConnect,
+  type OnEdgesChange,
+  type OnNodesChange,
+} from "@xyflow/react";
+import { useCallback, useState } from "react";
+import {
+  defaultEdgeOptions,
+  fitViewOptions,
+  initialEdges,
+  initialNodes,
+  nodeTypes,
+} from "./flow.config";
 
-function NodeContainer({ id, data }: CustomNodeProps) {
-  const { setNodes } = useReactFlow();
+function FlowContainer() {
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const onNodesChange: OnNodesChange = useCallback((changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  }, []);
 
-    setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === id
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                label: value,
-              },
-            }
-          : node,
-      ),
-    );
-  };
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [],
+  );
+
+  const onConnect: OnConnect = useCallback(
+    (connection) => setEdges((eds) => addEdge(connection, eds)),
+    [],
+  );
 
   return (
-    <div className="rounded-xl border border-slate-300 bg-white px-3 py-2 shadow-md">
-      <Handle type="target" position={Position.Top} />
-
-      <input
-        value={data.label}
-        onChange={onChange}
-        className="w-full rounded border px-2 py-1 text-sm outline-none focus:border-blue-500"
-      />
-
-      <Handle type="source" position={Position.Bottom} />
-    </div>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      fitView
+      fitViewOptions={fitViewOptions}
+      defaultEdgeOptions={defaultEdgeOptions}
+    >
+      <Background />
+    </ReactFlow>
   );
 }
 
-export default NodeContainer;
+export default FlowContainer;
