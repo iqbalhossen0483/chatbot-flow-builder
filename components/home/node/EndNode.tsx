@@ -1,4 +1,5 @@
-import { Handle, Position } from "@xyflow/react";
+import DeleteButton from "@/components/libs/DeleteButton";
+import { Handle, Position, useNodeId, useReactFlow } from "@xyflow/react";
 
 type EndNodeProps = {
   id: string;
@@ -7,6 +8,13 @@ type EndNodeProps = {
 };
 
 export default function EndNode({ selected }: EndNodeProps) {
+  const nodeId = useNodeId();
+  const { deleteElements } = useReactFlow();
+
+  function handleDelete() {
+    if (!nodeId) return;
+    deleteElements({ nodes: [{ id: nodeId }] });
+  }
   return (
     <div
       className={[
@@ -24,6 +32,11 @@ export default function EndNode({ selected }: EndNodeProps) {
         position={Position.Top}
         className="w-3! h-3! bg-white! border-2! border-red-400!"
       />
+      {selected && (
+        <div className="absolute top-0 right-0">
+          <DeleteButton onDelete={handleDelete} />
+        </div>
+      )}
     </div>
   );
 }

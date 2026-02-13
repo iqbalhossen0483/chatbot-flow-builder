@@ -155,13 +155,16 @@ export default function NodeAdder({
       });
 
       // Auto-connect with an edge
-      addEdges({
-        id: `e-${selectedNodeId}-${newId}`,
-        source: selectedNodeId,
-        target: newId,
-        animated: false,
-        style: { strokeWidth: 1.5, stroke: "#d1d5db" },
-      });
+      const handledCount = sourceNode.handles?.length ?? 0;
+      if (handledCount === 1) {
+        addEdges({
+          id: `e-${selectedNodeId}-${newId}`,
+          source: selectedNodeId,
+          target: newId,
+          animated: false,
+          style: { strokeWidth: 1.5, stroke: "#d1d5db" },
+        });
+      }
 
       // Flash feedback
       setJustAdded(type);

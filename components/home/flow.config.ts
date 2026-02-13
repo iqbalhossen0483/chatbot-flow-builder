@@ -21,7 +21,6 @@ import {
   Square,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { chatbotUIEdge01, chatbotUINode01 } from "./examples/chatbot-ui-01";
 import ApiNode from "./node/ApiNode";
 import ConditionNode from "./node/ConditionNode";
 import DelayNode from "./node/DelayNode";
@@ -137,18 +136,9 @@ export const nodeTypes: NodeTypes = {
   jump: JumpNode,
 };
 
-export const initialNodes: Node[] = [
-  {
-    id: "start-1",
-    type: "start",
-    data: {},
-    position: { x: 480, y: 0 },
-  },
-];
+export const initialNodes: Node[] = [];
 
-export const initialEdges: Edge[] = [
-  { id: "e01", source: "start-1", target: "msg-welcome" },
-];
+export const initialEdges: Edge[] = [];
 
 // ─── ReactFlow options ────────────────────────────────────────────────────────
 export const fitViewOptions: FitViewOptions = {
@@ -159,12 +149,4 @@ export const fitViewOptions: FitViewOptions = {
 export const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: false,
   style: { strokeWidth: 1.5, stroke: "#d1d5db" },
-};
-
-// ─── Legacy NodeProps type (kept for compat) ───────────────────────────────────
-export type NodeProps = {
-  id: string;
-  data: {
-    label: string;
-  };
 };
