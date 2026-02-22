@@ -92,20 +92,18 @@ const NODE_ICON_BG: Record<string, string> = {
   jump: "bg-pink-100 text-pink-500",
 };
 
-// ─── Props ────────────────────────────────────────────────────────────────────
 type NodeAdderProps = {
   selectedNodeId: string | null;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function NodeAdder({
   selectedNodeId,
   open,
   setOpen,
 }: NodeAdderProps) {
-  const { getNode, addNodes, addEdges } = useReactFlow();
+  const { getNode, addNodes } = useReactFlow();
   const [hoveredType, setHoveredType] = useState<NodeType | null>(null);
   const [justAdded, setJustAdded] = useState<NodeType | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -154,18 +152,6 @@ export default function NodeAdder({
         position: newPosition,
       });
 
-      // Auto-connect with an edge
-      const handledCount = sourceNode.handles?.length ?? 0;
-      if (handledCount === 1) {
-        addEdges({
-          id: `e-${selectedNodeId}-${newId}`,
-          source: selectedNodeId,
-          target: newId,
-          animated: false,
-          style: { strokeWidth: 1.5, stroke: "#d1d5db" },
-        });
-      }
-
       // Flash feedback
       setJustAdded(type);
       setTimeout(() => {
@@ -173,7 +159,7 @@ export default function NodeAdder({
         setOpen(false);
       }, 600);
     },
-    [selectedNodeId, getNode, addNodes, addEdges, setOpen],
+    [selectedNodeId, getNode, addNodes, setOpen],
   );
 
   if (!selectedNodeId) return null;

@@ -149,4 +149,5 @@ export const fitViewOptions: FitViewOptions = {
 export const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: false,
   style: { strokeWidth: 1.5, stroke: "#d1d5db" },
+  selectable: true,
 };
