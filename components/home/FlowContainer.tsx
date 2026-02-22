@@ -115,6 +115,11 @@ export default function FlowContainer() {
     });
   }, [selectedNodes, save]);
 
+  const handleGenerate = () => {
+    console.log("Nodes:", nodes);
+    console.log("Edges:", edges);
+  };
+
   if (isRestoring) {
     return (
       <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
@@ -157,7 +162,7 @@ export default function FlowContainer() {
         <Background />
       </ReactFlow>
 
-      <BottomNav edges={edges} nodes={nodes} />
+      <BottomNav edges={edges} nodes={nodes} onGenerate={handleGenerate} />
     </div>
   );
 }

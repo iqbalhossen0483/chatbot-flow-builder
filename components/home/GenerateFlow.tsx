@@ -3,14 +3,15 @@ import React from "react";
 import Button from "../libs/Button";
 
 interface Props {
-  nodes: Node[];
-  edges: Edge[];
+  onGenerate: () => void;
 }
 
-const GenerateFlow = ({ nodes, edges }: Props) => {
+const GenerateFlow = ({ onGenerate }: Props) => {
   return (
     <div>
-      <Button variant="outlined">Generate Flow</Button>
+      <Button variant="outlined" onClick={onGenerate}>
+        Generate Flow
+      </Button>
     </div>
   );
 };

@@ -7,13 +7,14 @@ import StartFlow from "./StartFlow";
 interface Props {
   nodes: Node[];
   edges: Edge[];
+  onGenerate: () => void;
 }
 
-const BottomNav = ({ nodes, edges }: Props) => {
+const BottomNav = ({ nodes, edges, onGenerate }: Props) => {
   return (
     <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-      <StartFlow nodes={nodes} edges={edges} />
-      <GenerateFlow nodes={nodes} edges={edges} />
+      <StartFlow />
+      <GenerateFlow onGenerate={onGenerate} />
       <SaveFlowToBackend nodes={nodes} edges={edges} />
     </div>
   );
