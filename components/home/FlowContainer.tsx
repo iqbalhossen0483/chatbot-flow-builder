@@ -24,6 +24,7 @@ import {
   initialNodes,
   nodeTypes,
 } from "./flow.config";
+import SaveFlowToBackend from "./SaveFlowToBackend";
 import Toolbar from "./Toolbar";
 
 export default function FlowContainer() {
@@ -155,6 +156,8 @@ export default function FlowContainer() {
       >
         <Background />
       </ReactFlow>
+
+      <SaveFlowToBackend edges={edges} nodes={nodes} />
     </div>
   );
 }
