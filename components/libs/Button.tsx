@@ -1,12 +1,19 @@
+import { LoaderCircle } from "lucide-react";
 import React from "react";
 
 type Props = {
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
   variant?: "contained" | "outlined" | "text";
+  isLoading?: boolean;
 };
 
-const Button = ({ onClick, children, variant = "contained" }: Props) => {
+const Button = ({
+  onClick,
+  children,
+  variant = "contained",
+  isLoading,
+}: Props) => {
   const variants = {
     contained:
       "flex items-center gap-2 rounded-lg bg-green-800 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-black/20 transition-all duration-150             hover:bg-green-900 hover:shadow-xl active:scale-95",
@@ -16,7 +23,11 @@ const Button = ({ onClick, children, variant = "contained" }: Props) => {
   };
   return (
     <button onClick={onClick} className={variants[variant]}>
-      {children}
+      {isLoading ? (
+        <LoaderCircle scale={16} className="animate-spin" />
+      ) : (
+        children
+      )}
     </button>
   );
 };

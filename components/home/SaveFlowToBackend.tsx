@@ -9,12 +9,6 @@ interface SaveFlowPayload {
   edges: Edge[];
 }
 
-interface SaveFlowResponse {
-  id: string;
-  title: string;
-  createdAt: string;
-}
-
 async function saveFlowToBackend(payload: SaveFlowPayload) {
   const res = await fetch("/api/flows", {
     method: "POST",
@@ -33,10 +27,9 @@ async function saveFlowToBackend(payload: SaveFlowPayload) {
 interface SaveFlowProps {
   nodes: Node[];
   edges: Edge[];
-  onSaveSuccess?: (response: SaveFlowResponse) => void;
 }
 
-const SaveFlowToBackend = ({ nodes, edges, onSaveSuccess }: SaveFlowProps) => {
+const SaveFlowToBackend = ({ nodes, edges }: SaveFlowProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -62,8 +55,6 @@ const SaveFlowToBackend = ({ nodes, edges, onSaveSuccess }: SaveFlowProps) => {
         edges,
       });
 
-      onSaveSuccess?.(response);
-
       closeModal();
     } catch (err) {}
   };
@@ -71,9 +62,7 @@ const SaveFlowToBackend = ({ nodes, edges, onSaveSuccess }: SaveFlowProps) => {
   return (
     <>
       {/* ── Save Button ── */}
-      <div className="absolute bottom-3 right-3 z-10">
-        <Button onClick={openModal}>Save Flow</Button>
-      </div>
+      <Button onClick={openModal}>Save Flow</Button>
 
       <Modal
         title="Save Flow"

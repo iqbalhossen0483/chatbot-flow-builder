@@ -17,6 +17,7 @@ import {
   type OnNodesChange,
 } from "@xyflow/react";
 import { useCallback, useRef, useState } from "react";
+import BottomNav from "./BottomNav";
 import {
   defaultEdgeOptions,
   fitViewOptions,
@@ -24,7 +25,6 @@ import {
   initialNodes,
   nodeTypes,
 } from "./flow.config";
-import SaveFlowToBackend from "./SaveFlowToBackend";
 import Toolbar from "./Toolbar";
 
 export default function FlowContainer() {
@@ -157,7 +157,7 @@ export default function FlowContainer() {
         <Background />
       </ReactFlow>
 
-      <SaveFlowToBackend edges={edges} nodes={nodes} />
+      <BottomNav edges={edges} nodes={nodes} />
     </div>
   );
 }
