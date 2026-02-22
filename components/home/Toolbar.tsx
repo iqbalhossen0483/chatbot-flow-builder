@@ -1,5 +1,13 @@
 import { SaveStatus } from "@/hooks/useFlowHistory";
-import { Check, CircleX, Redo, Save, Trash2, Undo } from "lucide-react";
+import {
+  Check,
+  CircleX,
+  Redo,
+  Save,
+  Trash2,
+  Undo,
+  Workflow,
+} from "lucide-react";
 import React, { JSX } from "react";
 
 const STATUS_LABEL: Record<SaveStatus, JSX.Element | null> = {
@@ -31,6 +39,8 @@ type Props = {
   canUndo: boolean;
   canRedo: boolean;
   saveStatus: SaveStatus;
+  onDuplicate: () => void;
+  selectedNodesCount: number;
 };
 
 const Toolbar = ({
@@ -40,11 +50,25 @@ const Toolbar = ({
   canUndo,
   canRedo,
   saveStatus,
+  selectedNodesCount,
+  onDuplicate,
 }: Props) => {
   const className =
     "rounded bg-white px-2 py-1 text-xs shadow disabled:opacity-40 hover:bg-gray-50 flex flex-col justify-center items-center gap-1";
   return (
     <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+      {selectedNodesCount > 0 && (
+        <button
+          onClick={onDuplicate}
+          title="Duplicate (Ctrl+D)"
+          className={className}
+        >
+          <p className="flex items-center gap-1">
+            {selectedNodesCount} <Workflow size={16} />
+          </p>{" "}
+          <p>Duplicate</p>
+        </button>
+      )}
       <button
         onClick={onUndo}
         disabled={!canUndo}

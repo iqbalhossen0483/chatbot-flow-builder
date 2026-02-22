@@ -4,6 +4,7 @@ import { useFlowHistory } from "@/hooks/useFlowHistory";
 import {
   Background,
   Connection,
+  OnSelectionChangeParams,
   ReactFlow,
   addEdge,
   applyEdgeChanges,
@@ -15,7 +16,7 @@ import {
   type OnEdgesChange,
   type OnNodesChange,
 } from "@xyflow/react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   defaultEdgeOptions,
   fitViewOptions,
@@ -28,8 +29,10 @@ import Toolbar from "./Toolbar";
 export default function FlowContainer() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
   const { save, undo, redo, canUndo, canRedo, saveStatus, isRestoring } =
     useFlowHistory(setNodes, setEdges, { debounceMs: 1500 });
+  const edgesRef = useRef(edges);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -84,6 +87,33 @@ export default function FlowContainer() {
     setEdges([]);
   }, []);
 
+  // Track which nodes are selected
+  const onSelectionChange = useCallback(
+    ({ nodes: sel }: OnSelectionChangeParams) => {
+      setSelectedNodes(sel);
+    },
+    [],
+  );
+
+  const handleDuplicateSelected = useCallback(() => {
+    if (!selectedNodes.length) return;
+    const OFFSET = 40;
+    const newNodes: Node[] = selectedNodes.map((n) => ({
+      ...n,
+      id: `${n.id}-copy-${Date.now()}-${Math.random()}`,
+      selected: false,
+      position: {
+        x: n.position.x + OFFSET,
+        y: n.position.y + OFFSET,
+      },
+    }));
+    setNodes((nds) => {
+      const next = [...nds, ...newNodes];
+      save(next, edgesRef.current);
+      return next;
+    });
+  }, [selectedNodes, save]);
+
   if (isRestoring) {
     return (
       <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
@@ -101,6 +131,8 @@ export default function FlowContainer() {
         onClear={handleClear}
         onRedo={redo}
         onUndo={undo}
+        onDuplicate={handleDuplicateSelected}
+        selectedNodesCount={selectedNodes.length}
       />
 
       <ReactFlow
@@ -114,9 +146,12 @@ export default function FlowContainer() {
         fitViewOptions={fitViewOptions}
         defaultEdgeOptions={defaultEdgeOptions}
         deleteKeyCode={["Delete"]}
+        multiSelectionKeyCode="Shift"
+        selectionOnDrag={true}
         elevateEdgesOnSelect
         edgesReconnectable
         onReconnect={onReconnect}
+        onSelectionChange={onSelectionChange}
       >
         <Background />
       </ReactFlow>
