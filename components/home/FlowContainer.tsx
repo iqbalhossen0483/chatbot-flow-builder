@@ -1,17 +1,19 @@
 "use client";
 import {
   Background,
+  Connection,
   ReactFlow,
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
+  reconnectEdge,
   type Edge,
   type Node,
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
 } from "@xyflow/react";
-import { useCallback, useState } from "react";
+import { MouseEvent, useCallback, useState } from "react";
 import {
   defaultEdgeOptions,
   fitViewOptions,
@@ -36,6 +38,11 @@ function FlowContainer() {
     (connection) => setEdges((eds) => addEdge(connection, eds)),
     [setEdges],
   );
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) =>
+      setEdges((els) => reconnectEdge(oldEdge, newConnection, els)),
+    [],
+  );
 
   return (
     <ReactFlow
@@ -48,6 +55,10 @@ function FlowContainer() {
       fitView
       fitViewOptions={fitViewOptions}
       defaultEdgeOptions={defaultEdgeOptions}
+      deleteKeyCode={["Delete"]}
+      elevateEdgesOnSelect={true}
+      edgesReconnectable={true}
+      onReconnect={onReconnect}
     >
       <Background />
     </ReactFlow>
